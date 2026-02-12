@@ -1,0 +1,18 @@
+<!-- static/avatar-simple.svg -->
+<svg id="simpleFace" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Simple avatar">
+  <!-- head -->
+  <circle cx="100" cy="100" r="82" fill="rgba(255,255,255,.10)" />
+  <!-- cheeks -->
+  <ellipse cx="70" cy="120" rx="12" ry="6" fill="#ff87b5" opacity="0.28"/>
+  <ellipse cx="130" cy="120" rx="12" ry="6" fill="#ff87b5" opacity="0.28"/>
+  <!-- eyes -->
+  <g id="eyes">
+    <g id="eyeL"><ellipse cx="72" cy="96" rx="10" ry="14" fill="#0f1536"/><circle cx="70" cy="92" r="3" fill="#eaf0ff"/></g>
+    <g id="eyeR"><ellipse cx="128" cy="96" rx="10" ry="14" fill="#0f1536"/><circle cx="126" cy="92" r="3" fill="#eaf0ff"/></g>
+    <!-- lids (blink) -->
+    <rect id="lidL" x="62" y="82" width="20" height="28" rx="10" fill="#000000" opacity="0"></rect>
+    <rect id="lidR" x="118" y="82" width="20" height="28" rx="10" fill="#000000" opacity="0"></rect>
+  </g>
+  <!-- mouth (animated by JS) -->
+  <path id="mouth" d="M74,136 Q100,144 126,136 Q100,156 74,136 Z" fill="#0f1536"/>
+</svg>

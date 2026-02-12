@@ -1,0 +1,7 @@
+cmd เข้ามาโฟลเดอร์ v1.4
+
+ใช้คำสั่ง :
+    .venv\Scripts\activate.bat
+    python server.py
+
+เข้า http://localhost:8000/

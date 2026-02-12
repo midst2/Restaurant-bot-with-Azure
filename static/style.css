@@ -1,0 +1,647 @@
+:root {
+  color-scheme: dark; /* font-family: "Segoe UI", system-ui, -apple-system, Inter, Arial, sans-serif; */
+  font-family: "kanit";
+  --page-padding: clamp(16px, 5vw, 40px);
+  --surface-radius: 24px;
+}
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+} /* Use dynamic viewport units so mobile URL bar doesn't steal height */
+body {
+  margin: 0;
+  height: 100dvh;
+  background: radial-gradient(
+    circle at 20% -10%,
+    #2440a8 0%,
+    #0a1130 55%,
+    #050915 100%
+  );
+  color: #eef1ff;
+  display: block; /* we control layout inside .app */
+} /* Move the outer padding into a margin on the app so height calc is correct */
+.app {
+  margin: var(--page-padding);
+  min-height: calc(100dvh - (var(--page-padding) * 2));
+  max-width: 980px;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--surface-radius);
+  background: rgba(11, 16, 34, 0.82);
+  border: 1px solid rgba(93, 126, 255, 0.18);
+  box-shadow: 0 32px 100px rgba(2, 12, 56, 0.55);
+  backdrop-filter: blur(24px);
+  margin-inline: auto;
+  overflow: hidden; /* prevent double scrollbars */
+}
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: clamp(16px, 4vw, 28px) clamp(18px, 5vw, 40px);
+  flex: 0 0 auto;
+}
+.brand {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.brand h1 {
+  margin: 0;
+  font-size: clamp(1.4rem, 2.2vw, 1.9rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.status {
+  font-size: 0.95rem;
+  opacity: 0.78;
+  white-space: nowrap;
+}
+button {
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+}
+.ghost-btn {
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: rgba(90, 118, 245, 0.18);
+  border: 1px solid rgba(116, 138, 255, 0.45);
+  transition: transform 0.2s ease, background 0.2s ease;
+  white-space: nowrap;
+}
+.ghost-btn:hover {
+  transform: translateY(-1px);
+  background: rgba(116, 138, 255, 0.28);
+} /* Stage can grow/shrink; we don't lock its height so the footer can be reached by scrolling */
+.stage {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(14px, 5vw, 40px);
+  gap: clamp(12px, 3vw, 24px);
+  min-height: 0;
+}
+.avatar-stage {
+  position: relative;
+  width: clamp(220px, 40vw, 420px);
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border-radius: 24px;
+  /* background: radial-gradient(
+    circle at 40% 30%,
+    rgba(82, 130, 255, 0.28),
+    rgba(9, 20, 68, 0.9)
+  );
+  border: 1px solid rgba(110, 136, 255, 0.22);
+  box-shadow: 0 40px 120px rgba(14, 32, 92, 0.65); */
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  overflow: hidden;
+  max-height: 70dvh; /* prevent the avatar from eating all vertical space on tiny screens */
+}
+.avatar-stage.listening {
+  transform: translateY(-4px);
+  /* box-shadow: 0 46px 130px rgba(25, 68, 168, 0.7); */
+}
+/* .avatar-stage.speaking {
+  box-shadow: 0 52px 150px rgba(98, 150, 255, 0.8);
+}  */
+/* ================= Avatar: Softer Light-Mode Shade ================= */ /* Stage: lighter panel + subtle halo */
+body.light .avatar-stage {
+  background: radial-gradient(
+    circle at 42% 32%,
+    #f3f6ff 0%,
+    #ffffff 60%
+  ) !important;
+  /* border: 1px solid rgba(30, 60, 230, 0.14) !important; */
+  /* box-shadow: 0 26px 90px rgba(30, 60, 230, 0.12) !important; */
+} /* Core: pastel sky-blue gradient (light-friendly) */
+body.light .avatar-core {
+  background: radial-gradient(
+    120% 100% at 40% 30%,
+    #04f99f 0%,
+    #78e3bf 55%,
+    #e3f1ed 100%
+  ) !important;
+  box-shadow: 50px rgba(#04f99f) ;
+} /* Optional: tweak glow while listening/speaking for lighter feel */
+/* body.light .avatar-stage.listening {
+  box-shadow: 0 30px 110px rgba(80, 120, 255, 0.18) !important;
+}
+body.light .avatar-stage.speaking {
+  box-shadow: 0 36px 120px rgba(120, 150, 255, 0.22) !important;
+} */
+.avatar-core {
+  width: min(78%, 70dvh);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(
+    120% 100% at 40% 30%,
+    #3356d6 0%,
+    #5e7dff 55%,
+    #9aa7ff 100%
+  );
+  position: relative;
+  overflow: visible;
+  animation: bob 2s ease-in-out infinite;
+}
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+.avatar-art {
+  width: 74%;
+  height: 74%;
+  position: relative;
+}
+.avatar-art svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.subtitle {
+  min-height: 40px;
+  max-width: min(92vw, 560px);
+  text-align: center;
+  font-size: clamp(0.92rem, 2vw, 1.02rem);
+  color: rgba(214, 220, 255, 0.92);
+  padding: 0 12px;
+}
+.subtitle.muted {
+  opacity: 0.6;
+} /* Footer stays in normal flow; if viewport is short you can scroll to reach it */
+.mic-bar {
+  flex: 0 0 auto;
+  padding: clamp(12px, 5vw, 28px);
+  display: flex;
+  justify-content: center;
+  border-top: 1px solid rgba(93, 126, 255, 0.18);
+  background: rgba(11, 16, 34, 0.82);
+}
+.mic-button {
+  width: clamp(76px, 18vw, 116px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: linear-gradient(150deg, #4c66ff, #2a3aff 40%, #8a4cff 100%);
+  color: inherit;
+  font-size: clamp(1.1rem, 3vw, 1.3rem);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 28px 68px rgba(47, 72, 210, 0.55);
+  transition: transform 0.18s ease, box-shadow 0.2s ease;
+  position: relative;
+} /* .mic-button::after { content: "Tap to talk"; position: absolute; bottom: -30px; font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.75; } */
+.mic-button.active {
+  transform: scale(1.05);
+  background: linear-gradient(150deg, #ff6c9a, #ff4578 45%, #7a4bff 100%);
+  box-shadow: 0 34px 80px rgba(255, 84, 140, 0.6);
+}
+.mic-button.active::after {
+  /* content: "Listening…"; */
+  opacity: 0.9;
+}
+.spin {
+  display: inline-block;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.order-option-group {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+}
+.order-option-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(116, 138, 255, 0.35);
+  background: rgba(255, 255, 255, 0.04);
+  color: #eef1ff;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.order-option-btn:hover {
+  background: rgba(116, 138, 255, 0.12);
+}
+.order-option-btn.active {
+  background: linear-gradient(135deg, #4c66ff, #7a4bff);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 0 12px rgba(100, 120, 255, 0.4);
+}
+body.light .order-option-btn {
+  background: rgba(30, 60, 230, 0.05);
+  border: 1px solid rgba(30, 60, 230, 0.15);
+  color: #0b1220;
+}
+body.light .order-option-btn.active {
+  background: linear-gradient(135deg, #5c7bff, #7a4bff);
+  color: #fff;
+  border-color: transparent;
+} /* Eyes blink */
+
+@keyframes blinkLids {
+  0%,
+  92%,
+  100% {
+    opacity: 0;
+  }
+  93%,
+  95% {
+    opacity: 1;
+  }
+}
+#lidL,
+#lidR {
+  animation: blinkLids 2s infinite;
+} /* Fallback mouth wobble if analyser unsupported */
+@keyframes mouthTalk {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(1px);
+  }
+}
+.avatar-stage.speaking #mouth {
+  animation: mouthTalk 0.22s linear infinite;
+} /* Modal layout — make contents scroll if tall */
+.chat-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(4, 8, 20, 0.78);
+  backdrop-filter: blur(18px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  z-index: 40;
+  padding: clamp(8px, 2vh, 16px);
+}
+.chat-modal.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+.chat-surface {
+  width: min(720px, 100%);
+  max-height: 92dvh; /* <= key: fit in viewport */
+  display: flex;
+  flex-direction: column;
+  background: rgba(10, 14, 32, 0.92);
+  border: 1px solid rgba(102, 132, 255, 0.18);
+  border-radius: 18px;
+  overflow: hidden; /* contain header + scrollable body */
+}
+.chat-surface header {
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(96, 122, 255, 0.35);
+  flex: 0 0 auto;
+}
+.chat-stream {
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: auto; /* body scrolls inside modal */
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+.bubble {
+  max-width: min(76%, 560px);
+  padding: 12px 14px;
+  border-radius: 14px;
+  line-height: 1.5;
+  font-size: 0.98rem;
+  box-shadow: 0 16px 40px rgba(15, 20, 50, 0.45);
+}
+.bubble.user {
+  margin-left: auto;
+  background: linear-gradient(150deg, #1d2c6d, #273a91);
+}
+.bubble.bot {
+  background: linear-gradient(150deg, #2d56d6, #3a6cff 80%);
+}
+.bubble.system {
+  margin: 0 auto;
+  background: rgba(90, 115, 255, 0.18);
+  color: rgba(214, 220, 255, 0.85);
+  font-style: italic;
+} /* === Receipt styles === */
+.receipt {
+  background: #0b1124;
+  border: 1px solid rgba(120, 140, 255, 0.18);
+  border-radius: 16px;
+  overflow: hidden;
+  color: #eef1ff;
+  box-shadow: 0 20px 60px rgba(10, 14, 40, 0.45);
+} /* top banner */
+.receipt__hero {
+  background: linear-gradient(0deg, #ffd65a, #ffd65a);
+  color: #242424;
+  padding: 16px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.receipt__hero-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #fff7d1;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+}
+.receipt__hero h3 {
+  font-size: 1.05rem;
+  line-height: 1.2;
+}
+.receipt__hero small {
+  display: block;
+  opacity: 0.65;
+  font-weight: 500;
+} /* body sections */
+.receipt__section {
+  padding: 14px 16px;
+  border-top: 1px solid rgba(120, 140, 255, 0.12);
+}
+.receipt__row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  padding: 10px 0;
+  align-items: center;
+  border-bottom: 1px dashed rgba(120, 140, 255, 0.18);
+}
+.receipt__row:last-child {
+  border-bottom: 0;
+}
+.receipt__meta {
+  font-size: 0.92rem;
+  opacity: 0.85;
+  display: grid;
+  gap: 6px;
+}
+.receipt__meta b {
+  opacity: 1;
+}
+.receipt__title {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 8px;
+}
+.receipt__item-name {
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+.receipt__item-note {
+  font-size: 0.85rem;
+  opacity: 0.8;
+  margin-top: 2px;
+}
+.receipt__qty {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  padding-left: 16px;
+} /* footer thanks */
+.receipt__thanks {
+  text-align: center;
+  font-weight: 600;
+  opacity: 0.9;
+} /* optional small print button row */
+.receipt__actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+.receipt__btn {
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(116, 138, 255, 0.35);
+  background: rgba(255, 255, 255, 0.03);
+  color: #eef1ff;
+  cursor: pointer;
+}
+.receipt__btn:hover {
+  background: rgba(116, 138, 255, 0.12);
+} /* ================= Light Theme ================= */
+body.light {
+  color-scheme: light;
+  color: #0b1220;
+  background: radial-gradient(
+    circle at 20% -10%,
+    #f2f6ff 0%,
+    #f6f8ff 55%,
+    #ffffff 100%
+  );
+} /* Shell */
+body.light .app {
+  background: #ffffff;
+  border: 1px solid rgba(20, 28, 60, 0.08);
+  box-shadow: 0 24px 80px rgba(10, 20, 60, 0.08);
+} /* Top bar */
+body.light .top-bar .status {
+  opacity: 0.9;
+} /* Buttons */
+body.light .ghost-btn {
+  background: rgba(30, 60, 230, 0.06);
+  border: 1px solid rgba(30, 60, 230, 0.18);
+  color: #0b1220;
+}
+body.light .ghost-btn:hover {
+  background: rgba(30, 60, 230, 0.12);
+} 
+body.light .subtitle {
+  color: #2d3550;
+} /* Mic bar + button */
+body.light .mic-bar {
+  background: #ffffff;
+  border-top: 1px solid rgba(20, 28, 60, 0.08);
+}
+body.light .mic-button {
+  box-shadow: 0 20px 50px rgba(47, 72, 210, 0.25);
+} /* Modals */
+body.light .chat-modal {
+  background: rgba(240, 244, 255, 0.72);
+  backdrop-filter: blur(16px);
+}
+body.light .chat-surface {
+  background: #ffffff;
+  border: 1px solid rgba(20, 28, 60, 0.08);
+}
+body.light .chat-surface header {
+  border-bottom: 1px solid rgba(20, 28, 60, 0.08);
+} /* Chat bubbles */
+body.light .bubble {
+  box-shadow: 0 10px 28px rgba(20, 28, 60, 0.08);
+  color: #0b1220;
+}
+body.light .bubble.user {
+  background: linear-gradient(150deg, #e9eeff, #dfe7ff);
+}
+body.light .bubble.bot {
+  background: linear-gradient(150deg, #e6f0ff, #d6e5ff 80%);
+}
+body.light .bubble.system {
+  background: rgba(30, 60, 230, 0.06);
+  color: #2d3550;
+} /* Receipt */
+body.light .receipt {
+  background: #ffffff;
+  border: 1px solid rgba(20, 28, 60, 0.08);
+  color: #0b1220;
+  box-shadow: 0 20px 60px rgba(20, 28, 60, 0.08);
+}
+body.light .receipt__hero {
+  background: #ffe16a; /* soft yellow header still reads “receipt” */
+  color: #2a2a2a;
+}
+body.light .receipt__section {
+  border-top: 1px solid rgba(20, 28, 60, 0.08);
+}
+body.light .receipt__row {
+  border-bottom: 1px dashed rgba(20, 28, 60, 0.15);
+}
+body.light .receipt__btn {
+  background: rgba(30, 60, 230, 0.06);
+  border: 1px solid rgba(30, 60, 230, 0.18);
+  color: #0b1220;
+}
+body.light .receipt__btn:hover {
+  background: rgba(30, 60, 230, 0.12);
+} /* ---------- Make Final Order Modal Scrollable ---------- */
+#finalModal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(8px, 2vh, 16px);
+} /* Outer surface fills most of viewport */
+#finalModal .chat-surface {
+  display: flex;
+  flex-direction: column;
+  max-height: 90dvh; /* stay within viewport */
+  width: min(720px, 100%);
+  overflow: hidden; /* contain scroll in content */
+  border-radius: 18px;
+} /* Header stays fixed */
+#finalModal header {
+  flex: 0 0 auto;
+  position: sticky; /* pin header at top when scrolling */
+  top: 0;
+  background: inherit;
+  z-index: 2;
+} /* Content area scrolls */
+#finalContent {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* smooth iOS scrolling */
+  padding: 16px;
+} /* Optional: add a nice scrollbar */
+#finalContent::-webkit-scrollbar {
+  width: 6px;
+}
+#finalContent::-webkit-scrollbar-thumb {
+  background: rgba(90, 118, 245, 0.25);
+  border-radius: 4px;
+} /* Height-constrained tweaks */
+@media (max-height: 1080px) {
+  .app {
+    border-radius: 18px;
+  }
+  .top-bar {
+    padding: 12px 14px;
+  }
+  .stage {
+    padding: 10px 12px;
+    gap: 10px;
+  }
+  .subtitle {
+    min-height: 32px;
+  }
+  .mic-bar {
+    padding: 30px;
+  }
+  .mic-button::after {
+    bottom: -18px;
+    font-size: 0.65rem;
+  }
+  .mic-locked #micButton,
+  #micButton.locked {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  .avatar-stage {
+    width: clamp(200px, 52vw, 360px);
+  }
+}
+@media (max-height: 720px) {
+  .app {
+    margin: 8px;
+    min-height: calc(100dvh - 16px);
+  }
+  .top-bar {
+    padding: 10px 12px;
+  }
+  .stage {
+    padding: 8px 10px;
+    gap: 8px;
+  }
+  .subtitle {
+    font-size: 0.9rem;
+    min-height: 28px;
+  }
+  .mic-bar {
+    padding: 20px;
+  }
+  .mic-button {
+    width: clamp(64px, 20vw, 96px);
+  }
+  .mic-button::after {
+    bottom: -14px;
+    font-size: 0.6rem;
+  }
+  .avatar-stage {
+    width: clamp(160px, 60vw, 300px);
+  }
+}
+@media (max-width: 1000px) {
+  .app {
+    margin-inline: 12px;
+  }
+}
